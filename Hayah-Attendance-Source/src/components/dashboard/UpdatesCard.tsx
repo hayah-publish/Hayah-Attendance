@@ -7,29 +7,31 @@ interface UpdatesCardProps {
 
 export function UpdatesCard({ onDetailsClick }: UpdatesCardProps) {
   return (
-    <div className="bg-[#141519] border border-[#21232B] rounded-[28px] p-5 flex flex-col justify-between shadow-sm">
+    <div className="bg-[#131313] border border-[#262626] rounded-[26px] p-5 flex flex-col justify-between h-[204px] shadow-sm">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-white tracking-tight">
+        <h3 className="text-[16px] font-extrabold text-[#F5F3EF] tracking-tight">
           آخر التحديثات
         </h3>
         <button
           type="button"
           onClick={onDetailsClick}
           aria-label="عرض التحديثات"
-          className="w-7 h-7 rounded-full bg-white text-black flex items-center justify-center hover:bg-neutral-200 transition-all cursor-pointer shadow-sm active:scale-95"
+          className="w-8 h-8 rounded-full bg-[#F5F3EF] text-[#141414] flex items-center justify-center hover:bg-[#E5E3DF] transition-all cursor-pointer shadow-sm active:scale-95"
         >
-          <ArrowUpLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+          <ArrowUpLeft className="w-4 h-4 stroke-[2.5]" />
         </button>
       </div>
 
-      <div className="border border-dashed border-[#2A2D37] rounded-2xl py-6 px-4 text-center my-3 flex flex-col items-center justify-center">
-        <div className="w-9 h-9 rounded-full bg-[#1F2229] border border-[#2D303B] text-cyan-400 flex items-center justify-center mb-2.5 shadow-sm">
-          <Megaphone className="w-4 h-4" />
+      {/* Dashed Inner Area */}
+      <div className="border border-dashed border-[#262626] rounded-[22px] py-4 px-4 text-center flex flex-col items-center justify-center gap-1.5 flex-1 mt-3">
+        <div className="w-11 h-11 rounded-full bg-[#1F1F1F] text-[#00B1FF] flex items-center justify-center shrink-0">
+          <Megaphone className="w-5 h-5 text-[#00B1FF]" />
         </div>
-        <h4 className="text-xs font-bold text-white">
+        <h4 className="text-[15px] font-extrabold text-[#F5F3EF]">
           لا توجد تحديثات بعد
         </h4>
-        <p className="text-[11px] text-neutral-400 mt-1 leading-relaxed max-w-[230px]">
+        <p className="text-[12.5px] text-[#9A968E] leading-tight">
           أخبار الشركة وإنجازات الفريق ستظهر هنا أول بأول.
         </p>
       </div>

@@ -1,25 +1,26 @@
 import type { Metadata } from "next";
-import { Cairo, Inter } from "next/font/google";
+import { Tajawal, Poppins } from "next/font/google";
 import "./globals.css";
 
-const cairo = Cairo({
+const tajawal = Tajawal({
   subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-arabic",
+  weight: ["400", "500", "700", "800"],
+  variable: "--font-tajawal",
   display: "swap",
 });
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-sans",
+  weight: ["400", "600", "700"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Internal HD - لوحة التحكم",
-  description: "نظام إدارة المهام والحضور الداخلي - استوديو HD",
+  title: "Hayah-Attendance - لوحة التحكم",
+  description: "نظام إدارة المهام والحضور - Hayah-Attendance",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/logo.png",
   },
 };
 
@@ -29,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable} ${inter.variable} dark`}>
-      <body className="min-h-screen bg-[#0B0C0E] text-white antialiased font-[family-name:var(--font-arabic)]">
+    <html lang="ar" dir="rtl" className={`${tajawal.variable} ${poppins.variable} dark`}>
+      <body className="min-h-screen bg-[#141414] text-[#F5F3EF] antialiased font-[family-name:var(--font-tajawal)]">
         {children}
       </body>
     </html>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft } from "lucide-react";
+import { Play } from "lucide-react";
 
 interface CheckInBannerProps {
   dateStr?: string;
@@ -13,26 +13,26 @@ export function CheckInBanner({
   onCheckIn,
 }: CheckInBannerProps) {
   return (
-    <div className="bg-[#B7B5F8] text-neutral-950 rounded-[28px] p-5 flex flex-col justify-between shadow-sm min-h-[170px] relative overflow-hidden">
+    <div className="bg-[#ADA9E3] text-[#141414] rounded-[30px] p-5 flex flex-col justify-between h-[184px] shadow-sm select-none">
       <div>
-        <span className="text-[11px] font-semibold text-neutral-700 block mb-1">
+        <span className="text-[12px] font-normal text-[#141414] block mb-1">
           {dateStr}
         </span>
-        <h3 className="text-base font-extrabold text-neutral-950 leading-snug max-w-[180px]">
+        <h3 className="text-[20px] font-bold text-[#19172B] leading-[22px] max-w-[185px]">
           جاهز ليوم جديد؟ ابدأ عملك الان و سجل حضورك
         </h3>
       </div>
 
-      <div className="mt-4">
+      <div>
         <button
           type="button"
           onClick={onCheckIn}
-          className="bg-white text-neutral-950 font-bold text-xs px-4 py-2 rounded-full flex items-center gap-2 shadow-sm hover:bg-neutral-100 transition-all cursor-pointer active:scale-95"
+          className="w-full bg-[#F2F2F2] hover:bg-white text-[#141414] font-extrabold text-[14px] h-[48px] px-2 rounded-[24px] flex items-center justify-between transition-all cursor-pointer shadow-sm active:scale-95"
         >
-          <div className="w-5 h-5 rounded-full bg-black text-white flex items-center justify-center shrink-0">
-            <ArrowLeft className="w-3 h-3 stroke-[3]" />
+          <div className="w-[36px] h-[36px] rounded-full bg-[#000000] text-[#F5F3EF] flex items-center justify-center shrink-0">
+            <Play className="w-3.5 h-3.5 fill-[#F5F3EF] text-[#F5F3EF] rotate-180 ml-0.5" />
           </div>
-          <span>تسجيل حضور</span>
+          <span className="flex-1 text-center pr-2">تسجيل حضور</span>
         </button>
       </div>
     </div>

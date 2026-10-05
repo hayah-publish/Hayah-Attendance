@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Home,
   CheckSquare,
@@ -11,8 +12,56 @@ import {
   CreditCard,
   Wallet,
   User,
+  PanelRightClose,
 } from "lucide-react";
+import { Logo } from "./Logo";
 import { DailyProgressCard } from "./DailyProgressCard";
+
+export function SortTimeIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* 3 horizontal sorting lines on the left */}
+      <path
+        d="M2.5 6.5H8.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M2.5 10H7.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M2.5 13.5H6.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      {/* Clock on the right */}
+      <circle
+        cx="14"
+        cy="10"
+        r="4.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <path
+        d="M14 7.8V10L15.5 10.8"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 interface SidebarProps {
   activeTab?: string;
@@ -21,120 +70,219 @@ interface SidebarProps {
 }
 
 export function Sidebar({
-  activeTab = "home",
+  activeTab,
   userName = "سلمى",
   lastUpdated = "27 سبتمبر",
 }: SidebarProps) {
-  return (
-    <aside className="w-72 shrink-0 flex flex-col justify-between py-6 px-4 bg-[#0B0C0E] border-l border-[#1A1C22] min-h-[calc(100vh-65px)]">
-      <div>
-        <div className="px-3 mb-6">
-          <h1 className="text-2xl font-bold text-white leading-tight">
-            أهلاً بعودتك،
-          </h1>
-          <h2 className="text-2xl font-bold text-white leading-tight mt-0.5">
-            {userName}
-          </h2>
-          <p className="text-xs text-neutral-400 mt-1">
-            آخر تحديث: {lastUpdated}
-          </p>
-        </div>
+  const pathname = usePathname();
 
-        <div className="mb-4">
-          <div className="px-3 text-[11px] font-semibold text-neutral-500 mb-2">
+  // Determine current active item based on pathname or activeTab prop
+  const isHomeActive = activeTab ? activeTab === "home" : pathname === "/";
+  const isTasksActive = activeTab ? activeTab === "tasks" : pathname.startsWith("/tasks");
+  const isSummaryActive = activeTab ? activeTab === "summary" : pathname.startsWith("/summary");
+  const isAttendanceActive = activeTab ? activeTab === "attendance" : pathname.startsWith("/attendance");
+  const isRequestsActive = activeTab ? activeTab === "requests" : pathname.startsWith("/requests");
+  const isBalancesActive = activeTab ? activeTab === "balances" : pathname.startsWith("/balances");
+  const isPayrollActive = activeTab ? activeTab === "payroll" : pathname.startsWith("/payroll");
+  const isProfileActive = activeTab ? activeTab === "profile" : pathname.startsWith("/profile");
+
+  return (
+    <aside className="w-[264px] shrink-0 flex flex-col gap-6 bg-[#141414] select-none" dir="rtl">
+      {/* 1. Brand Row: Logo + Brand Name on right, Collapse Button on left */}
+      <div className="w-[264px] h-[44px] flex items-center justify-between">
+        <Logo />
+        <button
+          type="button"
+          aria-label="تبديل القائمة الجانبية"
+          className="w-[32px] h-[32px] rounded-[10px] border border-[#262626] bg-transparent hover:bg-[#1F1F1F] text-[#9A968E] hover:text-[#F5F3EF] flex items-center justify-center transition-colors cursor-pointer"
+        >
+          <PanelRightClose className="w-[18px] h-[18px]" />
+        </button>
+      </div>
+
+      {/* 2. Welcome Block */}
+      <div className="px-1 text-right">
+        <h2 className="text-[24px] font-extrabold text-[#F5F3EF] leading-[29px]">
+          أهلاً بعودتك،
+          <br />
+          {userName}
+        </h2>
+        <span className="text-[12px] text-[#9A968E] mt-1 block font-normal">
+          آخر تحديث: {lastUpdated}
+        </span>
+      </div>
+
+      {/* 3. Navigation Groups Container (Frame 2147228965) */}
+      <div className="w-[264px] bg-[#000000] rounded-[26px] p-2.5 flex flex-col gap-2 border border-[#262626]/40">
+        
+        {/* Group 1: عملي */}
+        <div className="flex flex-col gap-1">
+          <div className="px-3 pt-1 text-[12px] text-[#9A968E] text-right">
             عملي
           </div>
+          
           <nav className="flex flex-col gap-1">
+            {/* الرئيسية */}
             <Link
               href="/"
-              className={`flex items-center justify-between px-4 py-2.5 rounded-full transition-all ${
-                activeTab === "home"
-                  ? "bg-white text-black font-bold shadow-sm"
-                  : "text-neutral-400 hover:text-white hover:bg-[#15161A]"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all ${
+                isHomeActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
               }`}
             >
-              <span className="text-xs">الرئيسية</span>
-              <Home className="w-4 h-4" />
+              <div className="flex items-center gap-3">
+                <Home className={`w-5 h-5 ${isHomeActive ? "text-[#141414]" : "text-[#9A968E]"}`} />
+                <span className={`text-[14px] ${isHomeActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  الرئيسية
+                </span>
+              </div>
             </Link>
 
+            {/* المهام */}
             <Link
               href="/tasks"
-              className="flex items-center justify-between px-4 py-2.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#15161A] transition-all group"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all group ${
+                isTasksActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
+              }`}
             >
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#EA580C] text-black font-bold text-[11px] flex items-center justify-center font-sans">
-                  6
+              <div className="flex items-center gap-3">
+                <CheckSquare className={`w-5 h-5 ${isTasksActive ? "text-[#141414]" : "text-[#9A968E] group-hover:text-[#F5F3EF]"}`} />
+                <span className={`text-[14px] ${isTasksActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  المهام
                 </span>
-                <span className="text-xs">المهام</span>
               </div>
-              <CheckSquare className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              <span className="w-[22px] h-[22px] rounded-full bg-[#F39708] text-[#F5F3EF] font-semibold text-[11px] font-[family-name:var(--font-poppins)] flex items-center justify-center">
+                6
+              </span>
             </Link>
 
+            {/* ملخص العمل */}
             <Link
               href="/summary"
-              className="flex items-center justify-between px-4 py-2.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#15161A] transition-all group"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all group ${
+                isSummaryActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
+              }`}
             >
-              <span className="text-xs">ملخص العمل</span>
-              <CheckCircle2 className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className={`w-5 h-5 ${isSummaryActive ? "text-[#141414]" : "text-[#9A968E] group-hover:text-[#F5F3EF]"}`} />
+                <span className={`text-[14px] ${isSummaryActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  ملخص العمل
+                </span>
+              </div>
             </Link>
 
+            {/* الحضور */}
             <Link
               href="/attendance"
-              className="flex items-center justify-between px-4 py-2.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#15161A] transition-all group"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all group ${
+                isAttendanceActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
+              }`}
             >
-              <span className="text-xs">الحضور</span>
-              <Calendar className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              <div className="flex items-center gap-3">
+                <Calendar className={`w-5 h-5 ${isAttendanceActive ? "text-[#141414]" : "text-[#9A968E] group-hover:text-[#F5F3EF]"}`} />
+                <span className={`text-[14px] ${isAttendanceActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  الحضور
+                </span>
+              </div>
             </Link>
           </nav>
         </div>
 
-        <div className="mb-4">
-          <div className="px-3 text-[11px] font-semibold text-neutral-500 mb-2">
+        {/* Group 2: حسابي */}
+        <div className="flex flex-col gap-1 pt-2 border-t border-[#262626]">
+          <div className="px-3 text-[12px] text-[#9A968E] text-right">
             حسابي
           </div>
+          
           <nav className="flex flex-col gap-1">
+            {/* الطلبات */}
             <Link
               href="/requests"
-              className="flex items-center justify-between px-4 py-2.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#15161A] transition-all group"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all group ${
+                isRequestsActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
+              }`}
             >
-              <span className="text-xs">الطلبات</span>
-              <Inbox className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              <div className="flex items-center gap-3">
+                <Inbox className={`w-5 h-5 ${isRequestsActive ? "text-[#141414]" : "text-[#9A968E] group-hover:text-[#F5F3EF]"}`} />
+                <span className={`text-[14px] ${isRequestsActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  الطلبات
+                </span>
+              </div>
             </Link>
 
+            {/* الارصده */}
             <Link
               href="/balances"
-              className="flex items-center justify-between px-4 py-2.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#15161A] transition-all group"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all group ${
+                isBalancesActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
+              }`}
             >
-              <span className="text-xs">الأرصدة</span>
-              <CreditCard className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              <div className="flex items-center gap-3">
+                <SortTimeIcon className={`w-5 h-5 ${isBalancesActive ? "text-[#141414]" : "text-[#9A968E] group-hover:text-[#F5F3EF]"}`} />
+                <span className={`text-[14px] ${isBalancesActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  الارصده
+                </span>
+              </div>
             </Link>
 
+            {/* المحفظه والراتب */}
             <Link
               href="/payroll"
-              className="flex items-center justify-between px-4 py-2.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#15161A] transition-all group"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all group ${
+                isPayrollActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
+              }`}
             >
-              <span className="text-xs">المحفظه والراتب</span>
-              <Wallet className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              <div className="flex items-center gap-3">
+                <Wallet className={`w-5 h-5 ${isPayrollActive ? "text-[#141414]" : "text-[#9A968E] group-hover:text-[#F5F3EF]"}`} />
+                <span className={`text-[14px] ${isPayrollActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  المحفظه والراتب
+                </span>
+              </div>
             </Link>
           </nav>
         </div>
 
-        <div className="mb-6">
-          <div className="px-3 text-[11px] font-semibold text-neutral-500 mb-2">
+        {/* Group 3: عام */}
+        <div className="flex flex-col gap-1 pt-2 border-t border-[#262626]">
+          <div className="px-3 text-[12px] text-[#9A968E] text-right">
             عام
           </div>
+          
           <nav className="flex flex-col gap-1">
             <Link
               href="/profile"
-              className="flex items-center justify-between px-4 py-2.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#15161A] transition-all group"
+              className={`flex items-center justify-between px-3 h-[44px] rounded-[16px] transition-all group ${
+                isProfileActive
+                  ? "bg-[#F5F3EF] text-[#141414] font-bold shadow-sm"
+                  : "text-[#9A968E] hover:text-[#F5F3EF] hover:bg-[#1A1A1A]"
+              }`}
             >
-              <span className="text-xs">البروفايل</span>
-              <User className="w-4 h-4 text-neutral-400 group-hover:text-white" />
+              <div className="flex items-center gap-3">
+                <User className={`w-5 h-5 ${isProfileActive ? "text-[#141414]" : "text-[#9A968E] group-hover:text-[#F5F3EF]"}`} />
+                <span className={`text-[14px] ${isProfileActive ? "font-bold text-[#141414]" : "font-medium"}`}>
+                  البروفايل
+                </span>
+              </div>
             </Link>
           </nav>
         </div>
+
       </div>
 
+      {/* 4. Bottom Promo Card (sbPromo) */}
       <DailyProgressCard completedCount={0} totalCount={0} percentage={0} />
     </aside>
   );

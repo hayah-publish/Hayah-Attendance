@@ -10,43 +10,48 @@ export function AttendanceTimeline({
   checkOutTime = "--:--",
 }: AttendanceTimelineProps) {
   return (
-    <div className="flex flex-col gap-1 select-none">
+    <div className="flex flex-col gap-0 select-none">
+      {/* Row 1: الحضور */}
       <div className="flex items-center gap-3">
+        {/* Active Bullet */}
+        <div className="w-[24px] h-[24px] rounded-full bg-[#F5F3EF] flex items-center justify-center shrink-0">
+          <div className="w-[8px] h-[8px] rounded-full bg-[#000000]" />
+        </div>
+
+        {/* Text */}
         <div className="text-right min-w-[70px]">
-          <div className="text-xs font-bold text-white leading-tight">
+          <div className="text-[16px] font-extrabold text-[#F5F3EF] leading-tight">
             الحضور
           </div>
-          <div className="text-[11px] text-neutral-400 font-mono leading-tight mt-0.5">
+          <div className="text-[14px] text-[#9A968E] font-mono leading-tight mt-0.5">
             {checkInTime}
           </div>
         </div>
-        
-        <div className="relative flex items-center justify-center w-5 h-5 shrink-0">
-          <span className="w-4 h-4 rounded-full border-2 border-white flex items-center justify-center bg-[#0F1013]">
-            <span className="w-1.5 h-1.5 rounded-full bg-white" />
-          </span>
-        </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* Vertical Dashed Line */}
+      <div className="flex items-center gap-3 py-1">
+        <div className="w-[24px] flex justify-center">
+          <div className="w-[1.5px] h-[34px] border-r-[1.5px] border-dashed border-[#525252]" />
+        </div>
         <div className="min-w-[70px]" />
-        <div className="w-5 flex justify-center py-0.5">
-          <div className="w-[1px] h-6 border-r-2 border-dashed border-neutral-600/80" />
-        </div>
       </div>
 
+      {/* Row 2: الانصراف */}
       <div className="flex items-center gap-3">
+        {/* Inactive Bullet */}
+        <div className="w-[24px] h-[24px] rounded-full bg-[#1F1F1F] flex items-center justify-center shrink-0">
+          <div className="w-[8px] h-[8px] rounded-full bg-[#404040]" />
+        </div>
+
+        {/* Text */}
         <div className="text-right min-w-[70px]">
-          <div className="text-xs font-medium text-neutral-400 leading-tight">
+          <div className="text-[16px] font-extrabold text-[#F5F3EF] leading-tight">
             الانصراف
           </div>
-          <div className="text-[11px] text-neutral-600 font-mono leading-tight mt-0.5">
+          <div className="text-[12px] text-[#9A968E] font-[family-name:var(--font-poppins)] leading-tight mt-0.5">
             {checkOutTime}
           </div>
-        </div>
-        
-        <div className="flex items-center justify-center w-5 h-5 shrink-0">
-          <span className="w-3 h-3 rounded-full bg-[#353842]" />
         </div>
       </div>
     </div>
