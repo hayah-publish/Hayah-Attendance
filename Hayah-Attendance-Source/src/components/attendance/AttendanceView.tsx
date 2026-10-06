@@ -8,6 +8,8 @@ import { AddTaskModal } from "../dashboard/AddTaskModal";
 import { WeeklyStripCard } from "./WeeklyStripCard";
 import { CheckInOutCard } from "./CheckInOutCard";
 import { AttendanceTodayLogCard, AttendanceLogItem } from "./AttendanceTodayLogCard";
+import { DEFAULT_USER } from "@/lib/userService";
+import { getTodayDateString } from "@/lib/dateUtils";
 
 interface AttendanceViewProps {
   currentDate?: string;
@@ -15,8 +17,8 @@ interface AttendanceViewProps {
 }
 
 export function AttendanceView({
-  currentDate = "الأحد، 27 سبتمبر",
-  userName = "سلمى",
+  currentDate = getTodayDateString(),
+  userName = DEFAULT_USER.firstName,
 }: AttendanceViewProps) {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [logs, setLogs] = useState<AttendanceLogItem[]>([]);
@@ -74,8 +76,9 @@ export function AttendanceView({
           
           {/* Top Header */}
           <TopNavbar
-            userName="أهلاً، سلمى"
-            userEmail="salmaghd-studio.c"
+            userName={userName === DEFAULT_USER.firstName ? DEFAULT_USER.greetingName : `أهلاً، ${userName}`}
+            userEmail={DEFAULT_USER.email}
+            avatarLetter={DEFAULT_USER.avatarLetter}
             onNewClick={() => setIsModalOpen(true)}
           />
 

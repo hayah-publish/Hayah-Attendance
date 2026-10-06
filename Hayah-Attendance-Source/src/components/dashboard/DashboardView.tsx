@@ -10,6 +10,12 @@ import { CheckInBanner } from "./CheckInBanner";
 import { ReviewTasksCard } from "./ReviewTasksCard";
 import { AttendanceTimeline } from "./AttendanceTimeline";
 import { AddTaskModal } from "./AddTaskModal";
+import { UpdatesModal } from "./UpdatesModal";
+import { UpdateItem, FALLBACK_UPDATES } from "@/lib/updatesService";
+import { DEFAULT_USER } from "@/lib/userService";
+import { getTodayDateString } from "@/lib/dateUtils";
+import { RequestTask, FALLBACK_TASKS } from "@/lib/tasksService";
+import { ReviewTask } from "@/lib/reviewsService";
 
 interface DashboardViewProps {
   initialDate?: string;
@@ -17,15 +23,76 @@ interface DashboardViewProps {
 }
 
 export function DashboardView({
-  initialDate = "الأحد، 27 سبتمبر",
-  userName = "سلمى",
+  initialDate = getTodayDateString(),
+  userName = DEFAULT_USER.firstName,
 }: DashboardViewProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdatesModalOpen, setIsUpdatesModalOpen] = useState(false);
+  const [updates, setUpdates] = useState<UpdateItem[]>([...FALLBACK_UPDATES].reverse());
+  const [inboxTasks, setInboxTasks] = useState<RequestTask[]>([]);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(true);
+  const [reviewTasks, setReviewTasks] = useState<ReviewTask[]>([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(true);
   const [attendance, setAttendance] = useState({
     checkInTime: "08:55 AM",
     checkOutTime: "--:--",
   });
   const [notification, setNotification] = useState<string | null>(null);
+
+  // Fetch live decrypted updates & incoming tasks from API
+  React.useEffect(() => {
+    async function loadLiveUpdates() {
+      try {
+        const res = await fetch("/api/updates");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.updates) && data.updates.length > 0) {
+            setUpdates(data.updates);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load /api/updates:", err);
+      }
+    }
+
+    async function loadLiveTasks() {
+      try {
+        setIsLoadingTasks(true);
+        const res = await fetch(`/api/tasks?send_to=${DEFAULT_USER.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.tasks)) {
+            setInboxTasks(data.tasks);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load /api/tasks:", err);
+      } finally {
+        setIsLoadingTasks(false);
+      }
+    }
+
+    async function loadLiveReviews() {
+      try {
+        setIsLoadingReviews(true);
+        const res = await fetch(`/api/reviews?send_to=${DEFAULT_USER.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.reviews)) {
+            setReviewTasks(data.reviews);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load /api/reviews:", err);
+      } finally {
+        setIsLoadingReviews(false);
+      }
+    }
+
+    loadLiveUpdates();
+    loadLiveTasks();
+    loadLiveReviews();
+  }, []);
 
   const showToast = (message: string) => {
     setNotification(message);
@@ -62,21 +129,29 @@ export function DashboardView({
         dir="rtl"
       >
         {/* 1. Right Side in RTL: Sidebar (264px width) */}
-        <Sidebar userName={userName} />
+        <Sidebar
+          userName={userName}
+          totalTasksCount={
+            isLoadingTasks || isLoadingReviews
+              ? undefined
+              : inboxTasks.length + reviewTasks.length
+          }
+        />
 
         {/* 2. Left Side in RTL: Main Content Column (1088px width) */}
         <div className="w-[1088px] max-w-full flex flex-col gap-6" dir="rtl">
           
           {/* Top Header (Search on Right, Actions on Left) */}
           <TopNavbar
-            userName="أهلاً، سلمى"
-            userEmail="salmaghd-studio.c"
+            userName={DEFAULT_USER.greetingName}
+            userEmail={DEFAULT_USER.email}
+            avatarLetter={DEFAULT_USER.avatarLetter}
             onNewClick={() => setIsModalOpen(true)}
           />
 
           {/* Main Black Rounded Frame (Frame 2147228860) */}
           <main
-            className="w-full bg-[#000000] rounded-[34px] p-6 lg:p-8 flex flex-col gap-6 shadow-2xl border border-[#262626]/40"
+            className="w-full bg-[#000000] rounded-[34px] p-6 lg:p-8 flex flex-col gap-6 shadow-2xl border border-[#262626]/40 relative overflow-hidden"
             dir="rtl"
           >
             {/* Date Header: Right-aligned in RTL */}
@@ -92,23 +167,27 @@ export function DashboardView({
               {/* 1. Right Card in RTL: Tasks Sent Card (403px width) */}
               <div className="w-full lg:w-[403px] shrink-0">
                 <TasksInboxCard
-                  onDetailsClick={() => showToast("لا توجد مهام مرسلة إليك")}
+                  tasks={inboxTasks}
+                  isLoading={isLoadingTasks}
+                  href="/tasks?tab=today"
                 />
               </div>
 
               {/* 2. Left Cards Group in RTL: Frame 2147228856 (613px width) */}
               <div className="w-full lg:w-[613px] flex-1 flex flex-col gap-5">
-                {/* آخر التحديثات (204px height) */}
+                {/* آخر التحديثات (204px height - يعرض آخر 7 تحديثات فقط) */}
                 <UpdatesCard
-                  onDetailsClick={() => showToast("لا توجد تحديثات جديدة حالياً")}
+                  updates={updates.slice(0, 7)}
+                  onDetailsClick={() => setIsUpdatesModalOpen(true)}
                 />
 
                 {/* Bottom Row under Updates (Review Tasks on Right, CheckInBanner on Left) */}
                 <div className="flex flex-col sm:flex-row items-center gap-4 w-full" dir="rtl">
-                  {/* Review Tasks Card (346px width) */}
                   <div className="w-full sm:w-[346px] flex-1">
                     <ReviewTasksCard
-                      onDetailsClick={() => showToast("لا توجد مهام بانتظار مراجعتك")}
+                      reviews={reviewTasks}
+                      isLoading={isLoadingReviews}
+                      href="/tasks?tab=review"
                     />
                   </div>
 
@@ -156,8 +235,14 @@ export function DashboardView({
                   checkOutTime={attendance.checkOutTime || undefined}
                 />
               </div>
-
             </div>
+
+            {/* Updates Full Modal (anchored inside main container) */}
+            <UpdatesModal
+              isOpen={isUpdatesModalOpen}
+              onClose={() => setIsUpdatesModalOpen(false)}
+              updates={updates}
+            />
 
           </main>
 

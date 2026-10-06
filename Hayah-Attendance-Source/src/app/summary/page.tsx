@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function SummaryPage() {
-  return <SummaryView currentDate="الأحد، 27 سبتمبر" userName="سلمى" />;
+  return <SummaryView />;
 }

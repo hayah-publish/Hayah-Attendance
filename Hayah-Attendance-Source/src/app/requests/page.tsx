@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function RequestsPage() {
-  return <RequestsView userName="سلمى" />;
+  return <RequestsView />;
 }

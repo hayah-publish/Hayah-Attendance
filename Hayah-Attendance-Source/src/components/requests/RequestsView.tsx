@@ -6,13 +6,14 @@ import { Sidebar } from "../dashboard/Sidebar";
 import { AddTaskModal } from "../dashboard/AddTaskModal";
 import { RequestFormCard, RequestFormData } from "./RequestFormCard";
 import { RequestsListCard, RequestItem } from "./RequestsListCard";
+import { DEFAULT_USER } from "@/lib/userService";
 
 interface RequestsViewProps {
   userName?: string;
 }
 
 export function RequestsView({
-  userName = "سلمى",
+  userName = DEFAULT_USER.firstName,
 }: RequestsViewProps) {
   // Empty status by default as requested by user
   const [requests, setRequests] = useState<RequestItem[]>([]);
@@ -65,8 +66,9 @@ export function RequestsView({
           
           {/* Top Header */}
           <TopNavbar
-            userName="أهلاً، سلمى"
-            userEmail="salmaghd-studio.c"
+            userName={userName === DEFAULT_USER.firstName ? DEFAULT_USER.greetingName : `أهلاً، ${userName}`}
+            userEmail={DEFAULT_USER.email}
+            avatarLetter={DEFAULT_USER.avatarLetter}
             onNewClick={() => setIsModalOpen(true)}
           />
 

@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function BalancesPage() {
-  return <BalancesView userName="سلمى" />;
+  return <BalancesView />;
 }

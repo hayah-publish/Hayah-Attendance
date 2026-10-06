@@ -30,6 +30,11 @@
   width: 6px;
   height: 6px;
 }
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
 ::-webkit-scrollbar-track {
   background: transparent;
 }
@@ -39,4 +44,46 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #404040;
+}
+
+/* Light card scrollbar (designed specifically for TasksInboxCard and light cards) */
+.custom-scrollbar-light {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 20, 20, 0.18) transparent;
+}
+.custom-scrollbar-light::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar-light::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.custom-scrollbar-light::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+.custom-scrollbar-light::-webkit-scrollbar-thumb {
+  background: rgba(20, 20, 20, 0.18);
+  border-radius: 9999px;
+}
+.custom-scrollbar-light::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 20, 20, 0.35);
+}
+
+/* Subtle, relaxed and slower update card slide-fade animation */
+@keyframes updateSlideFade {
+  0% {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-update-fade {
+  animation: updateSlideFade 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }

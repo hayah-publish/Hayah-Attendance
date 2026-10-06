@@ -7,6 +7,8 @@ import { Sidebar } from "../dashboard/Sidebar";
 import { AddTaskModal } from "../dashboard/AddTaskModal";
 import { SummaryStatsRow } from "./SummaryStatsRow";
 import { SummaryBoardCard } from "./SummaryBoardCard";
+import { DEFAULT_USER } from "@/lib/userService";
+import { getTodayDateString } from "@/lib/dateUtils";
 
 interface SummaryViewProps {
   currentDate?: string;
@@ -14,8 +16,8 @@ interface SummaryViewProps {
 }
 
 export function SummaryView({
-  currentDate = "الأحد، 27 سبتمبر",
-  userName = "سلمى",
+  currentDate = getTodayDateString(),
+  userName = DEFAULT_USER.firstName,
 }: SummaryViewProps) {
   const [activePeriod, setActivePeriod] = useState<"today" | "week" | "month">("today");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,8 +62,9 @@ export function SummaryView({
           
           {/* Top Header */}
           <TopNavbar
-            userName="أهلاً، سلمى"
-            userEmail="salmaghd-studio.c"
+            userName={userName === DEFAULT_USER.firstName ? DEFAULT_USER.greetingName : `أهلاً، ${userName}`}
+            userEmail={DEFAULT_USER.email}
+            avatarLetter={DEFAULT_USER.avatarLetter}
             onNewClick={() => setIsModalOpen(true)}
           />
 

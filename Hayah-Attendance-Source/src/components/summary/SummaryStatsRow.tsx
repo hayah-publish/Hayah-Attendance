@@ -3,6 +3,8 @@
 import React from "react";
 import { Sparkles, WholeWord, Clock, Send } from "lucide-react";
 
+import { getTodayDateString } from "@/lib/dateUtils";
+
 interface SummaryStatsRowProps {
   completedTasks?: number;
   wordCount?: number;
@@ -18,17 +20,18 @@ export function SummaryStatsRow({
   minutesCount = 0,
   sentApprovedTasks = 0,
   activePeriod = "today",
-  dateText = "ملخص اليوم - الأحد، 27 سبتمبر",
+  dateText,
 }: SummaryStatsRowProps) {
+  const todayStr = getTodayDateString();
+  const defaultDateText = `ملخص اليوم - ${todayStr}`;
   // Dynamically adapt subheader based on active period if dateText is default
   const resolvedDateText =
-    dateText !== "ملخص اليوم - الأحد، 27 سبتمبر"
-      ? dateText
-      : activePeriod === "today"
-      ? "ملخص اليوم - الأحد، 27 سبتمبر"
+    dateText ||
+    (activePeriod === "today"
+      ? `ملخص اليوم - ${todayStr}`
       : activePeriod === "week"
-      ? "ملخص هذا الأسبوع - الأحد، 27 سبتمبر"
-      : "ملخص هذا الشهر - سبتمبر 2026";
+      ? `ملخص هذا الأسبوع - ${todayStr}`
+      : "ملخص هذا الشهر - أكتوبر 2026");
 
   const stats = [
     {

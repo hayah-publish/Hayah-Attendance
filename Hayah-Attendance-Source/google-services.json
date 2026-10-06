@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "875486183361",
+    "firebase_url": "https://hayah-att-default-rtdb.firebaseio.com",
+    "project_id": "hayah-att",
+    "storage_bucket": "hayah-att.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875486183361:android:86b804b4d88f0360ff3940",
+        "android_client_info": {
+          "package_name": "com.hayah.att"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASBRvMElx19hn1XUhpPn1uywXpzEJXiTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

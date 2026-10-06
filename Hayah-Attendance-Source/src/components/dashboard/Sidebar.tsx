@@ -12,10 +12,11 @@ import {
   CreditCard,
   Wallet,
   User,
-  PanelRightClose,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { DailyProgressCard } from "./DailyProgressCard";
+import { DEFAULT_USER } from "@/lib/userService";
+import { getTodayShortDateString } from "@/lib/dateUtils";
 
 export function SortTimeIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -66,15 +67,50 @@ export function SortTimeIcon({ className = "w-5 h-5" }: { className?: string }) 
 interface SidebarProps {
   activeTab?: string;
   userName?: string;
+  userId?: string;
   lastUpdated?: string;
+  totalTasksCount?: number;
 }
 
 export function Sidebar({
   activeTab,
-  userName = "سلمى",
-  lastUpdated = "27 سبتمبر",
+  userName = DEFAULT_USER.firstName,
+  userId = DEFAULT_USER.id,
+  lastUpdated = DEFAULT_USER.lastUpdated,
+  totalTasksCount,
 }: SidebarProps) {
   const pathname = usePathname();
+
+  const [taskBadgeCount, setTaskBadgeCount] = React.useState<number | null>(
+    typeof totalTasksCount === "number" ? totalTasksCount : null
+  );
+
+  React.useEffect(() => {
+    if (typeof totalTasksCount === "number") {
+      setTaskBadgeCount(totalTasksCount);
+      return;
+    }
+
+    let isMounted = true;
+    async function loadTasksCount() {
+      try {
+        const res = await fetch(`/api/tasks/count?userId=${userId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && typeof data.totalCount === "number") {
+            setTaskBadgeCount(data.totalCount);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load tasks count for sidebar:", err);
+      }
+    }
+
+    loadTasksCount();
+    return () => {
+      isMounted = false;
+    };
+  }, [totalTasksCount, userId]);
 
   // Determine current active item based on pathname or activeTab prop
   const isHomeActive = activeTab ? activeTab === "home" : pathname === "/";
@@ -88,16 +124,9 @@ export function Sidebar({
 
   return (
     <aside className="w-[264px] shrink-0 flex flex-col gap-6 bg-[#141414] select-none" dir="rtl">
-      {/* 1. Brand Row: Logo + Brand Name on right, Collapse Button on left */}
-      <div className="w-[264px] h-[44px] flex items-center justify-between">
+      {/* 1. Brand Row: Logo + Brand Name */}
+      <div className="w-[264px] h-[44px] flex items-center justify-start">
         <Logo />
-        <button
-          type="button"
-          aria-label="تبديل القائمة الجانبية"
-          className="w-[32px] h-[32px] rounded-[10px] border border-[#262626] bg-transparent hover:bg-[#1F1F1F] text-[#9A968E] hover:text-[#F5F3EF] flex items-center justify-center transition-colors cursor-pointer"
-        >
-          <PanelRightClose className="w-[18px] h-[18px]" />
-        </button>
       </div>
 
       {/* 2. Welcome Block */}
@@ -154,10 +183,15 @@ export function Sidebar({
                   المهام
                 </span>
               </div>
-              <span className="w-[22px] h-[22px] rounded-full bg-[#F39708] text-[#F5F3EF] font-semibold text-[11px] font-[family-name:var(--font-poppins)] flex items-center justify-center">
-                6
-              </span>
+              {taskBadgeCount !== null ? (
+                <span className="min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#F39708] text-[#F5F3EF] font-semibold text-[11px] font-[family-name:var(--font-poppins)] flex items-center justify-center animate-in fade-in duration-200">
+                  {taskBadgeCount}
+                </span>
+              ) : (
+                <span className="w-[22px] h-[22px] rounded-full bg-transparent flex items-center justify-center" />
+              )}
             </Link>
+
 
             {/* ملخص العمل */}
             <Link

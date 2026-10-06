@@ -1,23 +1,105 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Calendar } from "lucide-react";
 import { TopNavbar } from "../dashboard/TopNavbar";
 import { Sidebar } from "../dashboard/Sidebar";
 import { AddTaskModal } from "../dashboard/AddTaskModal";
-import { TasksListContainer } from "./TasksListContainer";
+import { TasksListContainer, TasksTab } from "./TasksListContainer";
 import { TaskDetailsPlaceholder } from "./TaskDetailsPlaceholder";
+import { DEFAULT_USER } from "@/lib/userService";
+import { getTodayDateString } from "@/lib/dateUtils";
+import { RequestTask, FALLBACK_TASKS } from "@/lib/tasksService";
 
 interface TasksViewProps {
   currentDate?: string;
   userName?: string;
+  initialTab?: TasksTab;
 }
 
 export function TasksView({
-  currentDate = "الأحد، 27 سبتمبر",
-  userName = "سلمى",
+  currentDate = getTodayDateString(),
+  userName = DEFAULT_USER.firstName,
+  initialTab,
 }: TasksViewProps) {
-  const [activeTab, setActiveTab] = useState<"today" | "sent">("today");
+  const searchParams = useSearchParams();
+  const queryTab = searchParams ? searchParams.get("tab") : null;
+
+  const [activeTab, setActiveTab] = useState<TasksTab>(() => {
+    if (queryTab === "review") return "review";
+    if (queryTab === "sent") return "sent";
+    if (queryTab === "today") return "today";
+    return initialTab || "today";
+  });
+
+  const [todayTasks, setTodayTasks] = useState<RequestTask[]>([]);
+  const [reviewTasks, setReviewTasks] = useState<RequestTask[]>([]);
+  const [selectedTask, setSelectedTask] = useState<RequestTask | null>(null);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(true);
+
+  useEffect(() => {
+    async function loadAll() {
+      try {
+        setIsLoadingTasks(true);
+        const [tasksRes, reviewsRes] = await Promise.all([
+          fetch(`/api/tasks?send_to=${DEFAULT_USER.id}`),
+          fetch(`/api/reviews?send_to=${DEFAULT_USER.id}`),
+        ]);
+
+        let loadedToday: RequestTask[] = [];
+        let loadedReview: RequestTask[] = [];
+
+        if (tasksRes.ok) {
+          const data = await tasksRes.json();
+          if (data.success && Array.isArray(data.tasks)) {
+            loadedToday = [...data.tasks].reverse();
+            setTodayTasks(loadedToday);
+          }
+        }
+
+        if (reviewsRes.ok) {
+          const data = await reviewsRes.json();
+          if (data.success && Array.isArray(data.reviews)) {
+            loadedReview = [...data.reviews].reverse();
+            setReviewTasks(loadedReview);
+          }
+        }
+
+        const initialList = activeTab === "review" ? loadedReview : loadedToday;
+        if (initialList.length > 0) {
+          setSelectedTask(initialList[0]);
+        }
+      } catch (err) {
+        console.warn("Could not load tasks/reviews:", err);
+      } finally {
+        setIsLoadingTasks(false);
+      }
+    }
+
+    loadAll();
+  }, []);
+
+  const currentTasks = activeTab === "review" ? reviewTasks : todayTasks;
+
+  useEffect(() => {
+    if (currentTasks.length > 0) {
+      setSelectedTask(currentTasks[0]);
+    } else {
+      setSelectedTask(null);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (queryTab === "review") {
+      setActiveTab("review");
+    } else if (queryTab === "sent") {
+      setActiveTab("sent");
+    } else if (queryTab === "today") {
+      setActiveTab("today");
+    }
+  }, [queryTab]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
 
@@ -45,15 +127,20 @@ export function TasksView({
         dir="rtl"
       >
         {/* 1. Right Side in RTL: Sidebar (264px width) with activeTab="tasks" */}
-        <Sidebar activeTab="tasks" userName={userName} />
+        <Sidebar
+          activeTab="tasks"
+          userName={userName}
+          totalTasksCount={isLoadingTasks ? undefined : todayTasks.length + reviewTasks.length}
+        />
 
         {/* 2. Left Side in RTL: Main Content Column (1088px width) */}
         <div className="w-[1088px] max-w-full flex flex-col gap-6" dir="rtl">
           
           {/* Top Header */}
           <TopNavbar
-            userName="أهلاً، سلمى"
-            userEmail="salmaghd-studio.c"
+            userName={userName === DEFAULT_USER.firstName ? DEFAULT_USER.greetingName : `أهلاً، ${userName}`}
+            userEmail={DEFAULT_USER.email}
+            avatarLetter={DEFAULT_USER.avatarLetter}
             onNewClick={() => setIsModalOpen(true)}
           />
 
@@ -92,10 +179,16 @@ export function TasksView({
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
                 onAddTask={() => setIsModalOpen(true)}
+                tasks={currentTasks}
+                todayCount={todayTasks.length}
+                reviewCount={reviewTasks.length}
+                selectedTaskCode={selectedTask?.code}
+                onSelectTask={setSelectedTask}
+                isLoading={isLoadingTasks}
               />
 
               {/* 2. Left in RTL: Task Details Placeholder (320px width) */}
-              <TaskDetailsPlaceholder />
+              <TaskDetailsPlaceholder selectedTask={selectedTask} />
 
             </div>
 

@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function AttendancePage() {
-  return <AttendanceView currentDate="الأحد، 27 سبتمبر" userName="سلمى" />;
+  return <AttendanceView />;
 }

@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function HomePage() {
-  return <DashboardView initialDate="الأحد، 27 سبتمبر" userName="سلمى" />;
+  return <DashboardView />;
 }

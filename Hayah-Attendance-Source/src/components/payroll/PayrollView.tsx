@@ -4,22 +4,28 @@ import React, { useState } from "react";
 import { TopNavbar } from "../dashboard/TopNavbar";
 import { Sidebar } from "../dashboard/Sidebar";
 import { AddTaskModal } from "../dashboard/AddTaskModal";
-import { LeaveBalanceCard } from "./LeaveBalanceCard";
-import { BalanceHistoryCard } from "./BalanceHistoryCard";
-import { WorkHoursBalanceCard } from "./WorkHoursBalanceCard";
+import { MonthsSelector } from "./MonthsSelector";
+import { SalaryBreakdownCard } from "./SalaryBreakdownCard";
+import { WalletBalanceCard } from "./WalletBalanceCard";
+import { BankDetailsCard } from "./BankDetailsCard";
 import { DEFAULT_USER } from "@/lib/userService";
 
-interface BalancesViewProps {
+interface PayrollViewProps {
   userName?: string;
 }
 
-export function BalancesView({ userName = DEFAULT_USER.firstName }: BalancesViewProps) {
+export function PayrollView({ userName = DEFAULT_USER.firstName }: PayrollViewProps) {
+  const [selectedMonth, setSelectedMonth] = useState(9); // Default to September (سبتمبر) matching design
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
 
   const showToast = (message: string) => {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleRequestLoan = () => {
+    showToast("تم إرسال طلب السلفة إلى الإدارة المالية بنجاح");
   };
 
   return (
@@ -35,13 +41,13 @@ export function BalancesView({ userName = DEFAULT_USER.firstName }: BalancesView
         </div>
       )}
 
-      {/* Frame 2147228935: 1376px container with 24px gap */}
+      {/* Frame 2147228935: 1376px container with 24px gap between Sidebar and Content */}
       <div
         className="w-full max-w-[1376px] flex flex-col lg:flex-row items-start justify-start gap-6"
         dir="rtl"
       >
-        {/* 1. Right Side in RTL: Sidebar (264px width) with activeTab="balances" */}
-        <Sidebar activeTab="balances" userName={userName} />
+        {/* 1. Right Side in RTL: Sidebar (264px width) with activeTab="payroll" */}
+        <Sidebar activeTab="payroll" userName={userName} />
 
         {/* 2. Left Side in RTL: Main Content Column (1088px width) */}
         <div className="w-[1088px] max-w-full flex flex-col gap-6" dir="rtl">
@@ -60,25 +66,40 @@ export function BalancesView({ userName = DEFAULT_USER.firstName }: BalancesView
             {/* Header: greet (Frame 2147228918 header: Title & Subtitle) */}
             <div className="text-right w-full">
               <h1 className="text-[26px] font-extrabold font-[family-name:var(--font-tajawal)] text-[#F5F3EF] leading-tight">
-                الارصده
+                المحفظة والراتب
               </h1>
               <p className="text-[13px] font-normal font-[family-name:var(--font-tajawal)] text-[#9A968E] mt-1">
-                متابعة أرصدة الإجازات وساعات العمل
+                كل ما يخصك
               </p>
             </div>
 
-            {/* Section 1: pgrid (1040px width x 371px height, gap 24px) */}
-            <div className="flex flex-col lg:flex-row items-start gap-6 w-full" dir="rtl">
-              {/* Right Column in RTL: Leave Balance Card (508px x 371px) */}
-              <LeaveBalanceCard />
+            {/* Months Selector Row (Frame 2147228918 Order 1: 12 months + 2026 pill) */}
+            <MonthsSelector
+              selectedMonth={selectedMonth}
+              onSelectMonth={(m) => {
+                setSelectedMonth(m);
+                showToast(`تم عرض مستحقات شهر ${m}`);
+              }}
+              year="2026"
+            />
 
-              {/* Left Column in RTL: Balance History Card (508px x 252px) */}
-              <BalanceHistoryCard />
-            </div>
+            {/* Main Cards Row (Frame 2147228950: 1040px width x 454px height, gap 24px) */}
+            <div className="flex flex-col lg:flex-row items-stretch gap-6 w-full" dir="rtl">
+              
+              {/* Right Column in RTL: Salary Breakdown Card (522px x 454px) */}
+              <div className="w-full lg:w-[522px] flex flex-col">
+                <SalaryBreakdownCard />
+              </div>
 
-            {/* Section 2: Work Hours Card (692px width x 426px height) */}
-            <div className="w-full flex flex-col items-start" dir="rtl">
-              <WorkHoursBalanceCard />
+              {/* Left Column in RTL: Frame 2147228949 (Wallet Card + Bank Info + Loan Button) */}
+              <div className="w-full lg:w-[494px] flex flex-col justify-between gap-4">
+                {/* 1. Wallet Card (141px height) */}
+                <WalletBalanceCard />
+
+                {/* 2. Bank Details Card (232px height) + Loan Button (46px height) */}
+                <BankDetailsCard onRequestLoan={handleRequestLoan} />
+              </div>
+
             </div>
 
           </main>

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { TasksView } from "@/components/tasks/TasksView";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function TasksPage() {
-  return <TasksView currentDate="الأحد، 27 سبتمبر" userName="سلمى" />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#141414]" />}>
+      <TasksView />
+    </Suspense>
+  );
 }

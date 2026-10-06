@@ -2,16 +2,19 @@
 
 import React, { useState } from "react";
 import { Search, Bell, Plus } from "lucide-react";
+import { DEFAULT_USER } from "@/lib/userService";
 
 interface TopNavbarProps {
   userName?: string;
   userEmail?: string;
+  avatarLetter?: string;
   onNewClick?: () => void;
 }
 
 export function TopNavbar({
-  userName = "أهلاً، سلمى",
-  userEmail = "salmaghd-studio.c",
+  userName = DEFAULT_USER.greetingName,
+  userEmail = DEFAULT_USER.email,
+  avatarLetter = DEFAULT_USER.avatarLetter,
   onNewClick,
 }: TopNavbarProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,7 +66,7 @@ export function TopNavbar({
         {/* Me Chip */}
         <div className="flex items-center gap-2.5 bg-transparent pl-1">
           <div className="w-[44px] h-[44px] rounded-full bg-[#2D2922] text-[#F39708] font-extrabold text-[16px] flex items-center justify-center shrink-0">
-            S
+            {avatarLetter}
           </div>
           <div className="hidden sm:flex flex-col text-right">
             <span className="text-[14px] font-extrabold text-[#F5F3EF] leading-tight">
